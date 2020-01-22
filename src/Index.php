@@ -1,3 +1,8 @@
+<?php
+require('./Key.php');
+require('./ConnectDB.php');
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,12 +20,8 @@
   </form>
 
   <?php
-  require('./Key.php');
 
-  // $data = "私は京都産業大学コンピュータ理工学部です。";
   $word_class = "名詞";
-  // yahoo_mecab($data);
-  // $q = $_POST["query"];
   $q = $_POST['query'];
 
 
@@ -59,7 +60,6 @@
     }
 
     fclose($fp);
-    // echo $response;
 
     $DATA = explode("\r\n\r\n", $response, 2);
     return $DATA;
@@ -68,6 +68,7 @@
   function yahoo_mecab($data, $word_class, $url){
     $q_url = $url;
     $key = new Key();
+    $connectDb = new ConnectDB('list', $q_url, $contents);
     $apikey = $key->getName();
     // echo $apikey;
     // $query = "冬の朝の京都は美しい。";
@@ -84,7 +85,7 @@
       // echo $part_of_speech;
       if(mb_ereg($word_class, $part_of_speech) == 1){
         $contents = $item->surface;
-        insert_sql('list', $q_url, $contents);
+        $connectDb->insert_sql();
         // echo $item->surface . "|" . $part_of_speech ;
         // echo "<br>"; 
         $word_list[] = "$contents";
@@ -95,31 +96,6 @@
     // }
     return $word_list;
   }
-  
-
-
-  function insert_sql($table, $url, $contents){
-    try{
-      $dbh = new PDO('sqlite:../db/test.db', '', '');
-      
-      $sql = 'insert into list (url, contents) values(?, ?)';
-      $sth = $dbh->prepare($sql);
-      $sth->execute(array($url, $contents));
-  
-      $q = "'%t%'";
-      $sql = "select * from $table where contents like $q";
-      $sth = $dbh->prepare($sql);
-      $sth->execute();
-    
-      // while($row = $sth->fetch()){
-        // echo 'include ' . $q . ' : ' . $row['url'] . $row['contents'] . "<br>";
-      // }
-    } catch(PDOException $e){
-      print "error：　" . $e->getMessage(). "<br>";
-      die();
-    }
-  }
-
 
 
   if( isset($q) ){
@@ -135,7 +111,7 @@
     $size = 512;
     $end = mb_strlen($data);
     // echo $size;
-    do{
+    // do{
       $data2 = mb_substr($data, $start-$end, $size);
       $words = yahoo_mecab($data2, $word_class, $q);
       $start += $size;
@@ -144,7 +120,7 @@
         // echo $word["$item"];
         // echo "<br>";
       }
-    } while( ($start-$size) <= $end );
+    // } while( ($start-$size) <= $end );
 
     foreach($word as $value){
       $keyword = array_search($value, $word);
