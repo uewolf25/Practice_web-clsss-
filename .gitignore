@@ -2,3 +2,6 @@
 
 # practice folder
 webapp/
+
+# private files
+src/Key.php
