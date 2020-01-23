@@ -1,25 +1,45 @@
 <?php
 class ConnectDB{
   private $table;
-  private $url;
-  private $contents;
 
-  function __construct($table, $url, $contents){
+  /**
+   * コンストラクタ
+   */
+  public function __construct($table){
     $this->table = $table;
-    $this->url = $url;
-    $this->contents = $contents;
   }
 
-  function insert_sql(){
+  /**
+   * insert_sql　データの挿入
+   * @param $url 解析するURL
+   * @param $contents 形態素解析された単語
+   */
+  public function insert_sql($url, $contents){
     try{
       $dbh = new PDO('sqlite:../db/test.db', '', '');
       
       $sql = 'insert into list (url, contents) values(?, ?)';
       $sth = $dbh->prepare($sql);
-      $sth->execute(array($this->url, $this->contents));
+      $sth->execute(array($url, $contents));
   
-      $q = "'%t%'";
-      $sql = "select * from $this->table where contents like $q";
+      // $q = "\'%t%\'";
+      // $sql = "select * from $this->table where contents like $q";
+      // $sth = $dbh->prepare($sql);
+      // $sth->execute();
+    } catch(PDOException $e){
+      print "error：　" . $e->getMessage(). "<br>";
+      die();
+    }
+  }
+
+  /**
+   * delete_sql　既存のデータの削除
+   */
+  public function delete_sql(){
+    try{
+      $dbh = new PDO('sqlite:../db/test.db', '', '');
+      
+      $sql = 'delete from list';
       $sth = $dbh->prepare($sql);
       $sth->execute();
     } catch(PDOException $e){
