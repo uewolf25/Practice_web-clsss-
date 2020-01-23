@@ -5,3 +5,4 @@ webapp/
 
 # private files
 src/Key.php
+db/test.db
