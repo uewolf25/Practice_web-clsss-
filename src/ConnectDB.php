@@ -1,12 +1,17 @@
 <?php
 class ConnectDB{
+  // データベースのテーブル
   private $table;
+  // データベースオブジェクト
+  private $dbh;
 
   /**
    * コンストラクタ
    */
   public function __construct($table){
     $this->table = $table;
+    // データベースオブジェクトの作成
+    $this->dbh = new PDO('sqlite:../db/test.db', '', '');
   }
 
   /**
@@ -16,10 +21,8 @@ class ConnectDB{
    */
   public function insert_sql($url, $contents){
     try{
-      $dbh = new PDO('sqlite:../db/test.db', '', '');
-      
-      $sql = 'insert into list (url, contents) values(?, ?)';
-      $sth = $dbh->prepare($sql);
+      $sql = "insert into $this->table (url, contents) values(?, ?)";
+      $sth = $this->dbh->prepare($sql);
       $sth->execute(array($url, $contents));
   
       // $q = "\'%t%\'";
@@ -37,13 +40,27 @@ class ConnectDB{
    */
   public function delete_sql(){
     try{
-      $dbh = new PDO('sqlite:../db/test.db', '', '');
-      
-      $sql = 'delete from list';
-      $sth = $dbh->prepare($sql);
+      $sql = "delete from $this->table";
+      $sth = $this->dbh->prepare($sql);
       $sth->execute();
     } catch(PDOException $e){
       print "error：　" . $e->getMessage(). "<br>";
+      die();
+    }
+  }
+
+  /**
+   * count_sql キーワードをカウントする
+   * @param $q キーワード(単語)
+   */
+  public function count_sql($q){
+    try{
+      $sql = "select count(*) from $this->table where contents like $q";
+      $sth = $this->dbh->prepare($sql);
+      $sth->execute();
+      return $sth;
+    } Catch(PDOException $e){
+      print "error!:" . $e->getMessage() . "<br>" ;
       die();
     }
   }
