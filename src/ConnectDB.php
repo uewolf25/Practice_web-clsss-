@@ -64,5 +64,22 @@ class ConnectDB{
       die();
     }
   }
+
+  /**
+   * get_count_document ドキュメントの数を数える
+   * @return $sth->fetchColumn() 重複なしの(検索する)URL
+   */
+  public function get_count_document(){
+    try{
+      $sql = "select count(distinct url) from $this->table";
+      $sth = $this->dbh->prepare($sql);
+      $sth->execute();
+      return $sth->fetchColumn();
+      // echo $sth->fetchColumn() . "<br>";
+    } Catch(PDOException $e){
+      print "error!:" . $e->getMessage() . "<br>" ;
+      die();
+    }
+  }
 }
 ?>
