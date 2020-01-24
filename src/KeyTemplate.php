@@ -1,4 +1,4 @@
-<!-- Please create Instance in 'index.php' 
+<!-- Please create Instance in 'ConnectNetwork.php' 
     ex) $api_key = new Key();
         $api_key.getName();
 -->

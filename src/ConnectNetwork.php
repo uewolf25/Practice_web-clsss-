@@ -2,8 +2,12 @@
 require('./Key.php');
 
 class ConnectNetwork{
+  // ConnectDBクラスの実体
   private $dbInstance;
+  // 品詞
   private $word_class;
+  // 自分のAPIキー
+  private $my_key;
 
   /**
    * コンストラクタ
@@ -11,6 +15,7 @@ class ConnectNetwork{
   public function __construct($instance){
     $this->dbInstance = $instance;
     $this->word_class = "名詞";
+    $this->my_key = new Key();
   }
   /**
    * httpRequest　サーバに接続し、ネットワークからデータの読み込みを行う。
@@ -64,8 +69,7 @@ class ConnectNetwork{
    */
   public function yahoo_mecab($data, $url){
     $q_url = $url;
-    $key = new Key();
-    $apikey = $key->getName();
+    $apikey = $this->my_key->getName();
 
     $query = urlencode($data);
     $res = "surface,reading,pos,feature";
