@@ -39,10 +39,12 @@ class ConnectNetwork{
         $ppath = $purl["path"];
     }
 
+    echo "<div class=\".network-class\">";
     echo "protocol：\t" . $psheme . "<br>";
     echo "host：\t" . $phost . "<br>";
     echo "port：\t" . $pport . "<br>";
     echo "path：\t" . $ppath . "<br> <hr>";
+    echo "</div>";
 
     $hostname = $phost;
     $fp = fsockopen($hostname, $pport, $errno, $errstr);
