@@ -1,0 +1,31 @@
+@charset "utf-8";
+
+table{
+  border-collapse: collapse;
+  margin: auto;
+  width: 100%;
+  border: solid 2px black;/*表全体を線で囲う*/
+}
+
+table td, th{
+  border: dashed 1px gray;
+  text-align: center;
+}
+
+table th{
+  background-color: azure;
+}
+
+.input-form-class p{
+  text-align: center;
+  margin: 0 auto;
+}
+
+.network-class{
+  text-align: center;
+}
+
+.botton-color-class p{
+  font-size: 1.2em;
+  color: azure;
+}

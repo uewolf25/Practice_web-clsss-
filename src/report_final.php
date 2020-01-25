@@ -25,18 +25,21 @@ require('./Calculation.php');
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="../css/index.css" type="text/css">
   <title>最終課題</title>
 </head>
 <body>
-  <form action="<?php echo $_SERVER['PHP_SELF']?>" method="post">
-  <p>
-    <input type="text" name="query" />
-    <input type="submit" value="送信" />
-  </p>
-  </form>
+  <div class="input-form-class">
+    <form action="<?php echo $_SERVER['PHP_SELF']?>" method="post">
+    <p>
+      <input type="text" name="query" placeholder="URLを入力!!" />
+      <input type="submit" value="送信" />
+    </p>
+    </form>
+  </div>
 
   <?php
-
+  // 入力URL
   $q = $_POST['query'];
 
   if( isset($q) ){
@@ -71,33 +74,123 @@ require('./Calculation.php');
       }
     }
 
-    try{
-      //　全ての単語数
-      $word_all_count = 0;
-      foreach($word as $keyword => $value){
-        $q = "\"" . $keyword . "\"";
-        $count = $connectDb->count_sql($q)->fetchColumn();
-        // 単語のカウント
-        // echo "単語出現回数：　" . $count . "<br>";
-        $list_word["$keyword"] = $count;
-        $word_all_count += $count;
-      }
-    } Catch(PDOException $e){
-      print "error!:" . $e->getMessage() . "<br>" ;
-      die();
+    //　全ての単語数
+    $word_all_count = 0;
+    foreach($word as $keyword => $value){
+      $q = "\"" . $keyword . "\"";
+      $count = $connectDb->count_sql($q)->fetchColumn();
+      // 単語のカウント
+      // echo "単語出現回数：　" . $count . "<br>";
+      $list_word["$keyword"] = $count;
+      $word_all_count += $count;
     }
 
     // 昇順にソート
     arsort($list_word);
+
     $calc = new Calculation($list_word, $word_all_count);
     $tf_value = $calc->calc_tf_value();
     $idf_value = $calc->calc_idf_value( $connectDb->get_count_document() );
-    $calc->calc_tf_idf($tf_value, $idf_value);
+    $tfidf_list = $calc->calc_tf_idf($tf_value, $idf_value);
 
-    // foreach($list_word as $key => $value){
-    //   echo $key . " | " . $value . "<br>";
+    // $index_count = 0;
+    // foreach($tfidf_list as $key => $value){
+    //   // echo $key . " -> " .$value . "<br>";
+    //   $index_count++;
+    //   if($index_count == 10) break;
     // }
   }
   ?>
+
+  <!-- 結果の出力 -->
+  <table>
+    <caption>単語の重み付け(小数第９位以下は四捨五入)</caption>
+      <tr>
+        <th>ランキング</th>
+        <th>単語</th>
+        <th>単語の出現回数</th>
+        <th>tf値</th>
+        <th>idf値</th>
+        <th>tf-idf値</th>
+      </tr>
+      <? 
+      $index_count = 0;
+      foreach($tfidf_list as $key => $tfidf_value){ 
+        $index_count++;
+        if($index_count > 10) break;
+        ?>
+      <tr>
+        <td>
+          <?=$index_count ?>
+        </td>
+        <td>
+          <?=$key ?>
+        </td>
+        <td>
+          <?=$list_word[$key] ?>
+        </td>
+        <td>
+          <?=$tf_value[$key] ?>
+        </td>
+        <td>
+          <?=$idf_value ?>
+        </td>
+        <td>
+          <?=$tfidf_value ?>
+        </td>
+      </tr>
+
+      <?php } ?>
+  </table>
+
+  <div class="botton-color-class">
+    <form action="">
+      <p>
+        <input type="submit" value="もっと見る" name="more" />
+      </p>
+    </form>
+  </div>
+
+  <?php
+  // もっとみたいボタンを押された時
+  $query = $_POST["more"];
+  if( isset($query) ){ ?>
+    <!-- 結果の出力 -->
+  <table>
+    <caption>単語の重み付け(小数第９位以下は四捨五入)</caption>
+      <tr>
+        <th>ランキング</th>
+        <th>単語</th>
+        <th>単語の出現回数</th>
+        <th>tf値</th>
+        <th>idf値</th>
+        <th>tf-idf値</th>
+      </tr>
+      <? foreach($tfidf_list as $key => $tfidf_value){ ?>
+      <tr>
+        <td>
+          <?=$index_count ?>
+        </td>
+        <td>
+          <?=$key ?>
+        </td>
+        <td>
+          <?=$list_word[$key] ?>
+        </td>
+        <td>
+          <?=$tf_value[$key] ?>
+        </td>
+        <td>
+          <?=$idf_value ?>
+        </td>
+        <td>
+          <?=$tfidf_value ?>
+        </td>
+      </tr>
+
+      <?php } ?>
+  </table>
+
+  <?php } ?>
 </body>
 </html>
